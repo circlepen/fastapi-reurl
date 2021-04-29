@@ -11,7 +11,7 @@ services:
     ports:
       - 80:8000
     environment:
-      - DATABASE_URI=postgresql://circlepen:godhand@db/backend_db
+      - DATABASE_URI=postgresql://testuser:password@db/backend_db
     depends_on:
       - db
 
@@ -21,8 +21,8 @@ services:
     volumes:
       - ./data/:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER=circlepen
-      - POSTGRES_PASSWORD=godhand
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=password
       - POSTGRES_DB=backend_db
 
 
