@@ -1,3 +1,4 @@
+from readline import get_current_history_length
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -10,7 +11,7 @@ import random
 
 
 metadata.create_all(engine)
-app = FastAPI(root_path="/app/", docs_url="/docs")
+app = FastAPI(root_path="/", docs_url="/docs")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
@@ -27,7 +28,14 @@ async def shutdown():
     await database.disconnect()
 
 
-
+# @app.get("/docs", include_in_schema=False)
+# async def custom_swagger_ui_html(req: Request):
+#     root_path = req.scope.get("root_path", "").rstrip("/")
+#     openapi_url = root_path + app.openapi_url
+#     return get_swagger_ui_html(
+#         openapi_url=openapi_url,
+#         title="API",
+#     )
 
 @app.get("/")
 async def read_items(request: Request):
@@ -39,7 +47,7 @@ async def read_items(request: Request):
 @app.get("/redir/{url}", response_model=ShortenUrlSchema)
 async def redir(url: str):
     item = await db_manager.get_origin(url)
-    
+
     if item:
         item = dict(item)
         return RedirectResponse(item['origin'])
