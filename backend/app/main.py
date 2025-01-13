@@ -1,20 +1,18 @@
-from readline import get_current_history_length
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
+from app.api import db_manager, shorten
 from app.api.models import ShortenUrlSchema
-from fastapi.staticfiles import StaticFiles
+from app.auth import auth as auth_routes
+from app.auth.auth import get_current_active_user, get_current_user
 from app.db import database, engine, metadata
-from app.api import shorten, db_manager
-from fastapi.openapi.utils import get_openapi
-import random
-
+from fastapi import (APIRouter, FastAPI)
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 metadata.create_all(engine)
 app = FastAPI(root_path="/", docs_url="/docs")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
@@ -28,19 +26,9 @@ async def shutdown():
     await database.disconnect()
 
 
-# @app.get("/docs", include_in_schema=False)
-# async def custom_swagger_ui_html(req: Request):
-#     root_path = req.scope.get("root_path", "").rstrip("/")
-#     openapi_url = root_path + app.openapi_url
-#     return get_swagger_ui_html(
-#         openapi_url=openapi_url,
-#         title="API",
-#     )
-
 @app.get("/")
-async def read_items(request: Request):
-    host = request.client.host
-    return JSONResponse(content={'title': 'myapp', 'host': host})
+async def read_items():
+    return RedirectResponse("shorten/")
 
 
 
@@ -50,8 +38,29 @@ async def redir(url: str):
 
     if item:
         item = dict(item)
-        return RedirectResponse(item['origin'])
+        url = item['origin']
+        if 'http' or 'https' not in url:
+            url = 'http://' + url
+
+        return RedirectResponse(url)
     else:
         return RedirectResponse("/")
 
+# @app.get("/users/me")
+# async def read_users_me(current_user = Depends(get_current_active_user)):
+#     return current_user
+
+# async def get_items(
+#     current_user = Security(get_current_user, scopes=["items"])
+# ):
+#     if current_user.disabled:
+#         raise HTTPException(status_code=400, detail="Inactive user")
+#     return current_user
+
+# @app.get("/users/items")
+# async def read_user_items(current_user = Depends(get_items)):
+#     return {1:{"user": 'Lyle'}, 2: {'user': 'Tom'}}
+
+
 app.include_router(shorten.router, prefix="/shorten", tags=["short"])
+# app.include_router(auth_routes.router)

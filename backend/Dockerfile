@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM amd64/python:3.8-slim
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE 1

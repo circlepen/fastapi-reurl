@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copy Text Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            width: 40%;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e7f3fe;
+            color: #0c5460;
+            border: 1px solid #b8daff;
+            border-radius: 4px;
+            text-align: left;
+            display: none;
+        }
+
+        .text-box {
+            width: 90%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .copy-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div type="text" class="text-box" id="textToCopy">http://circlepen.tw/redir/{{data.shorten}}</div>
+        <button class="copy-button" onclick="copyText()">Copy Text</button>
+        <div class="info-box" id="infoBox">
+            Information will appear here after clicking the button.
+        </div>
+
+        <script>
+            function copyText() {
+                const textBox = document.getElementById('textToCopy');
+                const textToCopy = textBox.textContent || textBox.innerText;
+
+                var range = document.createRange();
+                range.selectNode(textBox);
+                window.getSelection().removeAllRanges(); // clear current selection
+                window.getSelection().addRange(range); // to select text
+                document.execCommand("copy");
+                window.getSelection().removeAllRanges();// to deselect
+
+                const infoBox = document.getElementById('infoBox');
+                infoBox.textContent = 'Text copied: ' + textToCopy;
+                infoBox.style.display = 'block';
+                setTimeout(function () {
+                    infoBox.style.display = 'none';
+                }, 2000);
+
+            }
+        </script>
+</body>
+
+</html>

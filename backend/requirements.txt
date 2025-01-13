@@ -9,3 +9,5 @@ aiofiles
 jinja2
 pydantic
 python-multipart
+python-jose[cryptography]
+passlib
